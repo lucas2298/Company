@@ -1,0 +1,55 @@
+﻿@section scripts {
+    @Scripts.Render("~/bundles/app")
+}
+
+<div class="page-header">
+    <h1>CompanyInformation</h1>
+</div>
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Staffs</h2>
+            </div>
+            <div class="panel-body">
+                <ul class="list-unstyled" data-bind="foreach: staffs">
+                    <li>
+                        <strong><span data-bind="text: StaffID"></span></strong>.
+                        <strong><span data-bind="text: StaffName"></span></strong>: <span data-bind="text: moment(StartWorkingAt).format('YYYY/MM/DD')"></span>
+                        <small><a href="#" data-bind="click: $parent.getStaffByID">Details</a></small>
+                        <small><a href="#" data-bind="click: $parent.deleteStaffByID">Delete</a></small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="alert alert-danger" data-bind="visible: error"><p data-bind="text: error"></p></div>
+    </div>
+
+    <!-- ko if:detail() -->
+
+    <div id="detail-notice" class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Detail</h2>
+            </div>
+            <table class="table">
+                <tr><td>StaffID</td><td data-bind="text: detail().StaffID"></td></tr>
+                <tr><td>StaffName</td><td data-bind="text: detail().StaffName"></td></tr>
+                <tr><td>Start working at</td><td data-bind="text: moment(detail().StartWorkingAt).format('YYYY/MM/DD')"></td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- /ko -->
+    <!--ko if:isDelete()-->
+    <div id="delete-notice" class="col-md-4">
+        <h2 class="aler alert-success">Delete Successfull</h2>
+    </div>
+    <!--/ko-->
+
+    <div class="col-md-4">
+        <!-- TODO: Add new book -->
+    </div>
+</div>
