@@ -34,13 +34,9 @@
     }
     // Get staff by id
     self.getStaffByID = function (item) {
-        var del = document.getElementById('delete-notice');
-        if (del != null) { del.style.display = "none"; }
         ajaxHelper(staffsUri + "GetStaffById?StaffId=" + item.StaffID, 'GET').done(function (data) {
             self.detail(data[0]);
         });
-        var detail = document.getElementById('detail-notice');
-        if (detail != null) { detail.style.display = "block"; } 
     }
     // Get staff by name
     self.searchStaffBtn = function () {
@@ -67,18 +63,24 @@
     }
     // Delete staff
     self.deleteStaffByID = function (item) {
-        var detail = document.getElementById('detail-notice');
-        if (detail != null) { detail.style.display = "none"; }
         if (confirm("Delete this staff?")) {
             ajaxHelper(staffsUri + "DeleteStaffById?StaffId=" + item.StaffID, 'DELETE').done(function (data) {
+                if (self.showSearchList()) {
+                    var temp = [];
+                    for (var i in self.staffSearching()) {
+                        var staff = self.staffSearching()[i];
+                        if (staff.StaffID != item.StaffID) {
+                            temp.push(self.staffSearching()[i])
+                        }
+                    }
+                    self.staffSearching(temp);
+                }
                 getAllStaffs();
             });
         }
-        var del = document.getElementById('delete-notice');
-        if (del != null) { del.style.display = "block"; }
     }
     // Edit staff
-    self.editStaff = function (item) {
+    self.editStaff = async function (item) {
         if ($("#staffDetailEditBtn").html() === 'Edit') {
             $("#staffDetailEditBtn").html('Save');
             $(".detailStaff").prop('contenteditable', true);
@@ -93,10 +95,17 @@
                 StaffName: newStaffName,
                 StartWorkingAt: newStartWorkingAt
             }
-            ajaxHelper(staffsUri + "EditStaffById?StaffId=" + id, 'PUT', staff).done(function (item) {
-                getAllStaffs();
-            });
-
+            data = await ajaxHelper(staffsUri + "EditStaffById?StaffId=" + id, 'PUT', staff);
+            var hihi;
+            if (self.showSearchList()) {
+                for (i in self.staffSearching()) {
+                    if (self.staffSearching()[i].StaffID == id) {
+                        break;
+                    }
+                }
+            }
+            getAllStaffs();
+            
             $("#staffDetailEditBtn").html('Edit');
             $(".detailStaff").prop('contenteditable', false);
             $("#cancelStaffChange").remove();

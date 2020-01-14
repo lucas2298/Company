@@ -24,34 +24,44 @@
                 </div>
                 <div id="listStaffs" class="panel-body">
                     <!-- ko if:!showSearchList() -->
-                    <table class="table" data-bind="foreach: staffs">
+                    <table class="table">
                         <thead>
                             <tr>
-                                <th scope="col" data-bind="text: StaffID"></th>
-                                <th scope="col" data-bind="text: StaffName"></th>
-                                <th scope="col" data-bind="click: $parent.getStaffByID">Details</th>
-                                <th scope="col" data-bind="click: $parent.deleteStaffByID">Delete</th>
+                                <th scope="col">StaffID</th>
+                                <th scope="col">StaffName</th>
+                                <th scope="col">Details</th>
+                                <th scope="col">Delete</th>
                             </tr>
                         </thead>
+                        <tbody data-bind="foreach: staffs">
+                            <tr>
+                                <td scope="col" data-bind="text: StaffID"></td>
+                                <td scope="col" data-bind="text: StaffName"></td>
+                                <td scope="col" data-bind="click: $parent.getStaffByID">Details</td>
+                                <td scope="col" data-bind="click: $parent.deleteStaffByID">Delete</td>
+                            </tr>
+                        </tbody>
                     </table>
-                    <ul id="showListStaffs" class="list-unstyled" data-bind="foreach: staffs">
-                        <li>
-                            <strong><span data-bind="text: StaffID"></span></strong>.
-                            <strong><span data-bind="text: StaffName"></span></strong>: <span data-bind="text: moment(StartWorkingAt).format('YYYY/MM/DD')"></span>
-                            <small><a href="#" data-bind="click: $parent.getStaffByID">Details</a></small>
-                            <small><a href="#" data-bind="click: $parent.deleteStaffByID">Delete</a></small>
-                        </li>
-                    </ul>
                     <!-- /ko -->
                     <!-- ko if:showSearchList() -->
-                    <ul id="showListStaffs" class="list-unstyled" data-bind="foreach: staffSearching">
-                        <li>
-                            <strong><span data-bind="text: StaffID"></span></strong>.
-                            <strong><span data-bind="text: StaffName"></span></strong>: <span data-bind="text: moment(StartWorkingAt).format('YYYY/MM/DD')"></span>
-                            <small><a href="#" data-bind="click: $parent.getStaffByID">Details</a></small>
-                            <small><a href="#" data-bind="click: $parent.deleteStaffByID">Delete</a></small>
-                        </li>
-                    </ul>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">StaffID</th>
+                                <th scope="col">StaffName</th>
+                                <th scope="col">Details</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: staffSearching">
+                            <tr>
+                                <td scope="col" data-bind="text: StaffID"></td>
+                                <td scope="col" data-bind="text: StaffName"></td>
+                                <td scope="col" data-bind="click: $parent.getStaffByID">Details</td>
+                                <td scope="col" data-bind="click: $parent.deleteStaffByID">Delete</td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <!-- /ko -->
 
                 </div>
