@@ -23,22 +23,10 @@ namespace Company.Controllers
         {
             return db.Staffs;
         }
-
-        // GET: api/Staffs/5
-        [HttpGet]
-        public IHttpActionResult GetStaffById(long id)
-        {
-            Staff staff = db.Staffs.Find(id);
-            if (staff == null)
-            {
-                return NotFound();
-            }
-            return Ok(staff);
-        }
         // GET: get a staff by it id
         [HttpGet]
         [ActionName("GetStaffById")]
-        public IEnumerable<Staff> GetStaffById([FromUri]SearchStaffParameterModel searchId)
+        public IEnumerable<Staff> GetStaffById([FromUri]GetStaffByIdParameterModel searchId)
         {
             var source = (from st in db.Staffs
                           select st).AsQueryable();
@@ -53,9 +41,9 @@ namespace Company.Controllers
         // GET: Search by staff name
         [HttpGet]
         [ActionName("GetAllStaffByName")]
-        public IEnumerable<Staff> GetStaffs([FromUri]SearchParameterModel searchParam)
+        public IEnumerable<Staff> GetStaffs([FromUri]GetStaffByNameParameterModel searchParam)
         {
-            var source = (from st in db.Staffs.OrderBy(a => a.StaffName)                          
+            var source = (from st in db.Staffs.OrderBy(a => a.StaffName)
                           select st).AsQueryable();
             // Search Parameter
             if (!string.IsNullOrEmpty(searchParam.StaffName))
@@ -66,45 +54,9 @@ namespace Company.Controllers
             return items;
         }
 
-        // PUT: api/Staffs/5
-        [HttpPut]
-        [NonAction]
-        public IHttpActionResult PutStaff(long id, Staff staff)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != staff.StaffID)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(staff).State = EntityState.Modified;
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!StaffExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        // POST: api/Staffs
+        // POST: Add new staff
         [HttpPost]
-        [NonAction]
+        [ActionName("AddNewStaff")]
         public IHttpActionResult PostStaff(Staff staff)
         {
             if (!ModelState.IsValid)
@@ -118,12 +70,48 @@ namespace Company.Controllers
             return CreatedAtRoute("DefaultApi", new { id = staff.StaffID }, staff);
         }
 
+        // PUT: api/Staffs/5
+        [HttpPut]
+        [ActionName("EditStaffById")]
+        public IHttpActionResult PutStaff([FromUri]EditStaffByIdParameterModel editStaff, Staff staff)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (editStaff.StaffId != staff.StaffID)
+            {
+                return BadRequest();
+            }
+
+            db.Entry(staff).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!StaffExists(editStaff.StaffId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
         // DELETE: api/Staffs/5
         [HttpDelete]
-        [NonAction]
-        public IHttpActionResult DeleteStaff(long id)
+        [ActionName("DeleteStaffById")]
+        public IHttpActionResult DeleteStaff([FromUri]DeleteStaffByIdParameterModel deleteId)
         {
-            Staff staff = db.Staffs.Find(id);
+            Staff staff = db.Staffs.Find(deleteId.StaffId);
             if (staff == null)
             {
                 return NotFound();

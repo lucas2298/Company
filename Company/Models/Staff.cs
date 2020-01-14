@@ -18,11 +18,19 @@ namespace Company.Models
         public string StaffName { get; set; }
         public Nullable<System.DateTime> StartWorkingAt { get; set; }
     }
-    public class SearchParameterModel
+    public class GetStaffByNameParameterModel
     {
         public string StaffName { get; set; }
     }
-    public class SearchStaffParameterModel
+    public class GetStaffByIdParameterModel
+    {
+        public long StaffId { get; set; }
+    }
+    public class EditStaffByIdParameterModel
+    {
+        public long StaffId { get; set; }
+    }
+    public class DeleteStaffByIdParameterModel
     {
         public long StaffId { get; set; }
     }

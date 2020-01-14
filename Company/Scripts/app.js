@@ -28,7 +28,7 @@
     }
     // Get all staff
     function getAllStaffs() {
-        ajaxHelper(staffsUri, 'GET').done(function (data) {
+        ajaxHelper(staffsUri + "GetAllStaff", 'GET').done(function (data) {
             self.staffs(data);
         });
     }
@@ -36,11 +36,20 @@
     self.getStaffByID = function (item) {
         var del = document.getElementById('delete-notice');
         if (del != null) { del.style.display = "none"; }
-        ajaxHelper(staffsUri + item.StaffID, 'GET').done(function (data) {
-            self.detail(data);
+        ajaxHelper(staffsUri + "GetStaffById?StaffId=" + item.StaffID, 'GET').done(function (data) {
+            self.detail(data[0]);
         });
         var detail = document.getElementById('detail-notice');
         if (detail != null) { detail.style.display = "block"; } 
+    }
+    // Get staff by name
+    self.searchStaffBtn = function () {
+        uri = "/api/staffs/GetAllStaffByName?StaffName=" + $("#searchStaffByName").val();
+        ajaxHelper(uri, 'GET').done(function (items) {
+            $("#showStaffs").remove();
+            self.showSearchList(1);
+            self.staffSearching(items);
+        });
     }
     // Add new staff
     self.addStaff = function (formElement) {
@@ -50,7 +59,7 @@
             StaffName: self.newStaff.StaffName(),
             StartWorkingAt: self.newStaff.StartWorkingAt()
         }
-        ajaxHelper(staffsUri, 'POST', staff).done(function (item) {
+        ajaxHelper(staffsUri + "AddNewStaff", 'POST', staff).done(function (item) {
             self.staffs.push(item);
             alert("Add staff successfull!");
             getAllStaffs();
@@ -61,7 +70,7 @@
         var detail = document.getElementById('detail-notice');
         if (detail != null) { detail.style.display = "none"; }
         if (confirm("Delete this staff?")) {
-            ajaxHelper(staffsUri + item.StaffID, 'DELETE').done(function (data) {
+            ajaxHelper(staffsUri + "DeleteStaffById?StaffId=" + item.StaffID, 'DELETE').done(function (data) {
                 getAllStaffs();
             });
         }
@@ -84,7 +93,7 @@
                 StaffName: newStaffName,
                 StartWorkingAt: newStartWorkingAt
             }
-            ajaxHelper(staffsUri + id, 'PUT', staff).done(function (item) {
+            ajaxHelper(staffsUri + "EditStaffById?StaffId=" + id, 'PUT', staff).done(function (item) {
                 getAllStaffs();
             });
 
@@ -92,14 +101,6 @@
             $(".detailStaff").prop('contenteditable', false);
             $("#cancelStaffChange").remove();
         }
-    }
-    self.searchStaffBtn = function () {
-        uri = "/api/staffs?NameSearch=" + $("#searchStaffByName").val();
-        ajaxHelper(uri, 'GET').done(function (items) {
-            $("#showStaffs").remove();
-            self.showSearchList(1);
-            self.staffSearching(items);
-        });
     }
     getAllStaffs();
 };

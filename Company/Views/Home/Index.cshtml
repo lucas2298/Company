@@ -24,6 +24,16 @@
                 </div>
                 <div id="listStaffs" class="panel-body">
                     <!-- ko if:!showSearchList() -->
+                    <table class="table" data-bind="foreach: staffs">
+                        <thead>
+                            <tr>
+                                <th scope="col" data-bind="text: StaffID"></th>
+                                <th scope="col" data-bind="text: StaffName"></th>
+                                <th scope="col" data-bind="click: $parent.getStaffByID">Details</th>
+                                <th scope="col" data-bind="click: $parent.deleteStaffByID">Delete</th>
+                            </tr>
+                        </thead>
+                    </table>
                     <ul id="showListStaffs" class="list-unstyled" data-bind="foreach: staffs">
                         <li>
                             <strong><span data-bind="text: StaffID"></span></strong>.
