@@ -1,55 +1,106 @@
 ﻿@section scripts {
     @Scripts.Render("~/bundles/app")
 }
+<html>
+<head>
+    
+</head>
+<body>
+    <div class="page-header">
+        <h1>CompanyInformation</h1>
+    </div>
+    <div class="form-inline">
+        <input type="text" placeholder="Search staffs.." id="searchStaffByName" class="form-control" name="search">
+        <span>
+            <button data-bind="click: searchStaffBtn" class="btn btn-default" type="submit">Search</button>
+        </span>        
+    </div>
+    <div class="row">
 
-<div class="page-header">
-    <h1>CompanyInformation</h1>
-</div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Staffs</h2>
+                </div>
+                <div id="listStaffs" class="panel-body">
+                    <!-- ko if:!showSearchList() -->
+                    <ul id="showListStaffs" class="list-unstyled" data-bind="foreach: staffs">
+                        <li>
+                            <strong><span data-bind="text: StaffID"></span></strong>.
+                            <strong><span data-bind="text: StaffName"></span></strong>: <span data-bind="text: moment(StartWorkingAt).format('YYYY/MM/DD')"></span>
+                            <small><a href="#" data-bind="click: $parent.getStaffByID">Details</a></small>
+                            <small><a href="#" data-bind="click: $parent.deleteStaffByID">Delete</a></small>
+                        </li>
+                    </ul>
+                    <!-- /ko -->
+                    <!-- ko if:showSearchList() -->
+                    <ul id="showListStaffs" class="list-unstyled" data-bind="foreach: staffSearching">
+                        <li>
+                            <strong><span data-bind="text: StaffID"></span></strong>.
+                            <strong><span data-bind="text: StaffName"></span></strong>: <span data-bind="text: moment(StartWorkingAt).format('YYYY/MM/DD')"></span>
+                            <small><a href="#" data-bind="click: $parent.getStaffByID">Details</a></small>
+                            <small><a href="#" data-bind="click: $parent.deleteStaffByID">Delete</a></small>
+                        </li>
+                    </ul>
+                    <!-- /ko -->
 
-<div class="row">
-
-    <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Staffs</h2>
+                </div>
             </div>
-            <div class="panel-body">
-                <ul class="list-unstyled" data-bind="foreach: staffs">
-                    <li>
-                        <strong><span data-bind="text: StaffID"></span></strong>.
-                        <strong><span data-bind="text: StaffName"></span></strong>: <span data-bind="text: moment(StartWorkingAt).format('YYYY/MM/DD')"></span>
-                        <small><a href="#" data-bind="click: $parent.getStaffByID">Details</a></small>
-                        <small><a href="#" data-bind="click: $parent.deleteStaffByID">Delete</a></small>
-                    </li>
-                </ul>
+            <div class="alert alert-danger" data-bind="visible: error"><p data-bind="text: error"></p></div>
+        </div>
+
+        <!-- ko if:detail() -->
+
+        <div id="detail-notice" class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="height:38px">
+                    <h2 style="float:left;" class="panel-title">Detail</h2>
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                        <tr><td>StaffID</td><td data-bind="text: detail().StaffID"></td></tr>
+                        <tr><td>StaffName</td><td id="StaffName" class="detailStaff" data-bind="text: detail().StaffName"></td></tr>
+                        <tr><td>Start working at</td><td id="StartWorkingAt" class="detailStaff" data-bind="text: moment(detail().StartWorkingAt).format('YYYY/MM/DD')"></td></tr>
+                    </table>
+                    <div id="addBtnToDetail">
+                        <button data-bind="click: editStaff" class="col-sm-2 btn btn-default " id="staffDetailEditBtn">Edit</button>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="alert alert-danger" data-bind="visible: error"><p data-bind="text: error"></p></div>
-    </div>
 
-    <!-- ko if:detail() -->
+        <!-- /ko -->
 
-    <div id="detail-notice" class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Detail</h2>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                @* Head *@
+                <div class="panel-heading">
+                    <h2 class="panel-title">Add Staff</h2>
+                </div>
+                @* Body *@
+                <div class="panel-body">
+                    <form class="form-horizontal" data-bind="submit: addStaff">
+                        <div class="form-group" data-bind="with: newStaff">
+
+                            <label for="inputStaffName" class="col-sm-1 control-label">NAME</label>
+                            <div class="col-sm-11">
+                                <input type="text" placeholder="Staff name" autocomplete="off" class="form-control" id="inputStaffName" data-bind="value: StaffName" />
+                            </div>
+
+                            <label for="inputStartWorkingAt" class="col-sm-1">DATE</label>
+                            <div class="col-sm-11">
+                                <input type="date" class="form-control" id="inputStartWorkingAt" data-bind="value: StartWorkingAt" />
+                                <p style="color: red; font-size:12px" id="staffSubmitError"></p>
+                            </div>
+
+                        </div>
+                        <button id="addStaffSubmit" type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                </div>
             </div>
-            <table class="table">
-                <tr><td>StaffID</td><td data-bind="text: detail().StaffID"></td></tr>
-                <tr><td>StaffName</td><td data-bind="text: detail().StaffName"></td></tr>
-                <tr><td>Start working at</td><td data-bind="text: moment(detail().StartWorkingAt).format('YYYY/MM/DD')"></td></tr>
-            </table>
         </div>
     </div>
+    
+</body>
+</html>
 
-    <!-- /ko -->
-    <!--ko if:isDelete()-->
-    <div id="delete-notice" class="col-md-4">
-        <h2 class="aler alert-success">Delete Successfull</h2>
-    </div>
-    <!--/ko-->
-
-    <div class="col-md-4">
-        <!-- TODO: Add new book -->
-    </div>
-</div>

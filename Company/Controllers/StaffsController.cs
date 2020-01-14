@@ -16,40 +16,59 @@ namespace Company.Controllers
     {
         private CompanyEntities db = new CompanyEntities();
 
-        // GET: api/Staffs
-        public IQueryable<StaffDto> GetStaffs()
+        // GET: Get all staff
+        [HttpGet]
+        [ActionName("GetAllStaff")]
+        public IQueryable<Staff> GetAllStaff()
         {
-            var staffs = from st in db.Staffs
-                         select new StaffDto()
-                         {
-                             StaffID = st.StaffID,
-                             StaffName = st.StaffName,
-                             StartWorkingAt = st.StartWorkingAt
-                         };
-            return staffs;
-            //return db.Staffs;
+            return db.Staffs;
         }
 
         // GET: api/Staffs/5
-        [ResponseType(typeof(Staff))]
-        public IHttpActionResult GetStaff(long id)
+        [HttpGet]
+        public IHttpActionResult GetStaffById(long id)
         {
-            Staff staff = db.Staffs.Find(id);            
+            Staff staff = db.Staffs.Find(id);
             if (staff == null)
             {
                 return NotFound();
             }
-            var staffDto = new StaffDto()
-            {
-                StaffName = staff.StaffName,
-                StaffID = staff.StaffID,
-                StartWorkingAt = staff.StartWorkingAt
-            };
             return Ok(staff);
+        }
+        // GET: get a staff by it id
+        [HttpGet]
+        [ActionName("GetStaffById")]
+        public IEnumerable<Staff> GetStaffById([FromUri]SearchStaffParameterModel searchId)
+        {
+            var source = (from st in db.Staffs
+                          select st).AsQueryable();
+            if (searchId.StaffId > 0)
+            {
+                source = source.Where(a => (a.StaffID.Equals(searchId.StaffId)));
+            }
+            var items = source.ToList();
+            return items;
+        }
+
+        // GET: Search by staff name
+        [HttpGet]
+        [ActionName("GetAllStaffByName")]
+        public IEnumerable<Staff> GetStaffs([FromUri]SearchParameterModel searchParam)
+        {
+            var source = (from st in db.Staffs.OrderBy(a => a.StaffName)                          
+                          select st).AsQueryable();
+            // Search Parameter
+            if (!string.IsNullOrEmpty(searchParam.StaffName))
+            {
+                source = source.Where(a => a.StaffName.Contains(searchParam.StaffName));
+            }
+            var items = source.ToList();
+            return items;
         }
 
         // PUT: api/Staffs/5
-        [ResponseType(typeof(void))]
+        [HttpPut]
+        [NonAction]
         public IHttpActionResult PutStaff(long id, Staff staff)
         {
             if (!ModelState.IsValid)
@@ -84,7 +103,8 @@ namespace Company.Controllers
         }
 
         // POST: api/Staffs
-        [ResponseType(typeof(Staff))]
+        [HttpPost]
+        [NonAction]
         public IHttpActionResult PostStaff(Staff staff)
         {
             if (!ModelState.IsValid)
@@ -99,7 +119,8 @@ namespace Company.Controllers
         }
 
         // DELETE: api/Staffs/5
-        [ResponseType(typeof(Staff))]
+        [HttpDelete]
+        [NonAction]
         public IHttpActionResult DeleteStaff(long id)
         {
             Staff staff = db.Staffs.Find(id);
