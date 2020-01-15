@@ -37,8 +37,8 @@
                             <tr>
                                 <td scope="col" data-bind="text: StaffID"></td>
                                 <td scope="col" data-bind="text: StaffName"></td>
-                                <td scope="col" data-bind="click: $parent.getStaffByID">Details</td>
-                                <td scope="col" data-bind="click: $parent.deleteStaffByID">Delete</td>
+                                <td scope="col"><button class="btn btn-default" data-bind="click: $parent.getStaffByID">Details</button></td>
+                                <td scope="col"><button class="btn btn-default" data-bind="click: $parent.deleteStaffByID">Delete</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -57,8 +57,8 @@
                             <tr>
                                 <td scope="col" data-bind="text: StaffID"></td>
                                 <td scope="col" data-bind="text: StaffName"></td>
-                                <td scope="col" data-bind="click: $parent.getStaffByID">Details</td>
-                                <td scope="col" data-bind="click: $parent.deleteStaffByID">Delete</td>
+                                <td scope="col"><button class="btn btn-default" data-bind="click: $parent.getStaffByID">Details</button></td>
+                                <td scope="col"><button class="btn btn-default" data-bind="click: $parent.deleteStaffByID">Delete</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -83,7 +83,7 @@
                         <tr><td>Start working at</td><td id="StartWorkingAt" class="detailStaff" data-bind="text: moment(detail().StartWorkingAt).format('YYYY/MM/DD')"></td></tr>
                     </table>
                     <div id="addBtnToDetail">
-                        <button data-bind="click: editStaff" class="col-sm-2 btn btn-default " id="staffDetailEditBtn">Edit</button>
+                        <button data-bind="click: editStaff" class="col-sm-2 btn btn-default" id="staffDetailEditBtn">Edit</button>
                     </div>
                 </div>
             </div>

@@ -39,13 +39,21 @@
         });
     }
     // Get staff by name
-    self.searchStaffBtn = function () {
-        uri = "/api/staffs/GetAllStaffByName?StaffName=" + $("#searchStaffByName").val();
-        ajaxHelper(uri, 'GET').done(function (items) {
-            $("#showStaffs").remove();
-            self.showSearchList(1);
-            self.staffSearching(items);
-        });
+    self.searchStaffBtn = async function () {
+        var name = $("#searchStaffByName").val();
+        uri1 = "/api/staffs/GetAllStaffByName?StaffName=" + name;        
+        var newName = xoa_dau(name);
+        uri2 = "/api/staffs/GetAllStaffByName?StaffName=" + newName;
+        console.log(newName)
+        items1 = await ajaxHelper(uri1, 'GET');
+        items2 = await ajaxHelper(uri2, 'GET');
+        if (name != newName)
+            for (var i in items2) {
+                items1.push(items2[i])
+            }
+        $("#showStaffs").remove();
+        self.showSearchList(1);
+        self.staffSearching(items1);
     }
     // Add new staff
     self.addStaff = function (formElement) {
@@ -96,15 +104,9 @@
                 StartWorkingAt: newStartWorkingAt
             }
             data = await ajaxHelper(staffsUri + "EditStaffById?StaffId=" + id, 'PUT', staff);
-            var hihi;
             if (self.showSearchList()) {
-                for (i in self.staffSearching()) {
-                    if (self.staffSearching()[i].StaffID == id) {
-                        break;
-                    }
-                }
+                self.searchStaffBtn();
             }
-            getAllStaffs();
             
             $("#staffDetailEditBtn").html('Edit');
             $(".detailStaff").prop('contenteditable', false);
@@ -113,7 +115,25 @@
     }
     getAllStaffs();
 };
-ko.applyBindings(new ViewModel());
+
+// Xoa dau tieng viet
+function xoa_dau(str) {
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+    str = str.replace(/đ/g, "d");
+    str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+    str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+    str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+    str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+    str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+    str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+    str = str.replace(/Đ/g, "D");
+    return str;
+}
 
 // Check Name and Date are empty or not
 $("#addStaffSubmit").click(function () {
@@ -125,3 +145,4 @@ $("#addStaffSubmit").click(function () {
     }
 });
 
+ko.applyBindings(new ViewModel());
