@@ -9,7 +9,8 @@
     // New staff
     self.newStaff = {
         StaffName: ko.observable(),
-        StartWorkingAt: ko.observable()
+        StartWorkingAt: ko.observable(),
+        NewStaffName: ko.observable()
     }
 
     var staffsUri = '/api/staffs/'
@@ -38,34 +39,37 @@
             self.detail(data[0]);
         });
     }
+
     // Get staff by name
     self.searchStaffBtn = async function () {
-        var name = $("#searchStaffByName").val();
-        uri1 = "/api/staffs/GetAllStaffByName?StaffName=" + name;        
+        var name = $("#searchStaffByName").val();        
         var newName = xoa_dau(name);
-        uri2 = "/api/staffs/GetAllStaffByName?StaffName=" + newName;
-        console.log(newName)
-        items1 = await ajaxHelper(uri1, 'GET');
-        items2 = await ajaxHelper(uri2, 'GET');
-        if (name != newName)
-            for (var i in items2) {
-                items1.push(items2[i])
-            }
+        newName = xoa_ky_tu(newName);
+        uri = "/api/staffs/GetAllStaffByName?StaffSearchName=" + newName;
+        items = await ajaxHelper(uri, 'GET');
         $("#showStaffs").remove();
         self.showSearchList(1);
-        self.staffSearching(items1);
+        self.staffSearching(items);
     }
+
     // Add new staff
     self.addStaff = function (formElement) {
         if (self.newStaff.StaffName() == undefined || self.newStaff.StartWorkingAt() == undefined) return;
         if (self.newStaff.StaffName() == "" || self.newStaff.StartWorkingAt() == "") return;
+        var newStaffName = xoa_dau(self.newStaff.StaffName());
+        self.newStaff.NewStaffName(newStaffName);
         var staff = {
             StaffName: self.newStaff.StaffName(),
-            StartWorkingAt: self.newStaff.StartWorkingAt()
+            StartWorkingAt: self.newStaff.StartWorkingAt(),
+            NewStaffName: self.newStaff.NewStaffName()
         }
         ajaxHelper(staffsUri + "AddNewStaff", 'POST', staff).done(function (item) {
             self.staffs.push(item);
             alert("Add staff successfull!");
+            if (self.showSearchList) {
+                self.searchStaffBtn();
+            }
+            else
             getAllStaffs();
         });
     }
@@ -98,23 +102,62 @@
             id = self.detail().StaffID;
             newStaffName = $("#StaffName").html();
             newStartWorkingAt = $("#StartWorkingAt").html();
+            newStaffNameKhongDau = xoa_dau($("#StaffName").html());
             var staff = {
                 StaffID: id,
                 StaffName: newStaffName,
-                StartWorkingAt: newStartWorkingAt
+                StartWorkingAt: newStartWorkingAt,
+                NewStaffName: newStaffNameKhongDau
             }
             data = await ajaxHelper(staffsUri + "EditStaffById?StaffId=" + id, 'PUT', staff);
             if (self.showSearchList()) {
                 self.searchStaffBtn();
             }
+            else getAllStaffs();
             
             $("#staffDetailEditBtn").html('Edit');
             $(".detailStaff").prop('contenteditable', false);
             $("#cancelStaffChange").remove();
         }
     }
+    // Enter to search
+    $("#searchStaffByName").keypress(function () {
+        if (event.which === 13) {
+            self.searchStaffBtn();
+        }
+    });
+
+    // Check Name and Date are empty or not
+    $("#addStaffSubmit").click(function () {
+        if ($("#inputStaffName").val() == "" || $("#inputStartWorkingAt").val() == "") {
+            $("#staffSubmitError").text("Name and date must not empty!");
+        }
+        else if ($("#inputStaffName").val() != "" && $("#inputStartWorkingAt").val() != "") {
+            $("#staffSubmitError").text("");
+        }
+    });
+
     getAllStaffs();
 };
+
+// Xoa ky tu dac biet
+function xoa_ky_tu(str) {
+    str = str.replace(/[^a-zA-Z ]/g, "");
+    var temp = str;
+    str = str.replace(/  /g, " ");
+    while (str[0] == " ") {
+        str = str.slice(1, str.length);
+    }
+    while (str[str.length - 1] == " ") {
+        str = str.slice(0, str.length - 1);
+    }
+
+    while (temp != str) {
+        temp = str;
+        str = str.replace(/  /g, " ");
+    }
+    return str;
+}
 
 // Xoa dau tieng viet
 function xoa_dau(str) {
@@ -134,15 +177,5 @@ function xoa_dau(str) {
     str = str.replace(/Đ/g, "D");
     return str;
 }
-
-// Check Name and Date are empty or not
-$("#addStaffSubmit").click(function () {
-    if ($("#inputStaffName").val() == "" || $("#inputStartWorkingAt").val() == "") {
-        $("#staffSubmitError").text("Name and date must not empty!");
-    }
-    else if ($("#inputStaffName").val() != "" && $("#inputStartWorkingAt").val() != "") {
-        $("#staffSubmitError").text("");
-    }
-});
 
 ko.applyBindings(new ViewModel());

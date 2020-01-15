@@ -184,6 +184,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Company.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\SP_FILTER_STAFF_Result.cs">
+      <DependentUpon>Company.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sp_helpdiagramdefinition_Result.cs">
+      <DependentUpon>Company.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sp_helpdiagrams_Result.cs">
+      <DependentUpon>Company.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Staff.cs">
       <DependentUpon>Company.tt</DependentUpon>
     </Compile>
