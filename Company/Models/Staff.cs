@@ -17,21 +17,6 @@ namespace Company.Models
         public long StaffID { get; set; }
         public string StaffName { get; set; }
         public Nullable<System.DateTime> StartWorkingAt { get; set; }
-    }
-    public class GetStaffByNameParameterModel
-    {
-        public string StaffName { get; set; }
-    }
-    public class GetStaffByIdParameterModel
-    {
-        public long StaffId { get; set; }
-    }
-    public class EditStaffByIdParameterModel
-    {
-        public long StaffId { get; set; }
-    }
-    public class DeleteStaffByIdParameterModel
-    {
-        public long StaffId { get; set; }
+        public string NewStaffName { get; set; }
     }
 }

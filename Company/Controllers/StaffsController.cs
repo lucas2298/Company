@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -16,6 +17,31 @@ namespace Company.Controllers
     {
         private CompanyEntities db = new CompanyEntities();
 
+        public static string RemoveUnicode(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            string[] arr1 = new string[] { "á", "à", "ả", "ã", "ạ", "â", "ấ", "ầ", "ẩ", "ẫ", "ậ", "ă", "ắ", "ằ", "ẳ", "ẵ", "ặ",
+    "đ",
+    "é","è","ẻ","ẽ","ẹ","ê","ế","ề","ể","ễ","ệ",
+    "í","ì","ỉ","ĩ","ị",
+    "ó","ò","ỏ","õ","ọ","ô","ố","ồ","ổ","ỗ","ộ","ơ","ớ","ờ","ở","ỡ","ợ",
+    "ú","ù","ủ","ũ","ụ","ư","ứ","ừ","ử","ữ","ự",
+    "ý","ỳ","ỷ","ỹ","ỵ",};
+            string[] arr2 = new string[] { "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a",
+    "d",
+    "e","e","e","e","e","e","e","e","e","e","e",
+    "i","i","i","i","i",
+    "o","o","o","o","o","o","o","o","o","o","o","o","o","o","o","o","o",
+    "u","u","u","u","u","u","u","u","u","u","u",
+    "y","y","y","y","y",};
+            for (int i = 0; i < arr1.Length; i++)
+            {
+                text = text.Replace(arr1[i], arr2[i]);
+                text = text.Replace(arr1[i].ToUpper(), arr2[i].ToUpper());
+            }
+            return text;
+        }
+
         // GET: Get all staff
         [HttpGet]
         [ActionName("GetAllStaff")]
@@ -26,13 +52,13 @@ namespace Company.Controllers
         // GET: get a staff by it id
         [HttpGet]
         [ActionName("GetStaffById")]
-        public IEnumerable<Staff> GetStaffById([FromUri]GetStaffByIdParameterModel searchId)
+        public IEnumerable<Staff> GetStaffById([FromUri]long StaffId)
         {
             var source = (from st in db.Staffs
                           select st).AsQueryable();
-            if (searchId.StaffId > 0)
+            if (StaffId > 0)
             {
-                source = source.Where(a => (a.StaffID.Equals(searchId.StaffId)));
+                source = source.Where(a => (a.StaffID.Equals(StaffId)));
             }
             var items = source.ToList();
             return items;
@@ -41,14 +67,16 @@ namespace Company.Controllers
         // GET: Search by staff name
         [HttpGet]
         [ActionName("GetAllStaffByName")]
-        public IEnumerable<Staff> GetStaffs([FromUri]GetStaffByNameParameterModel searchParam)
+        public IEnumerable<Staff> GetStaffs([FromUri]string StaffSearchName)
         {
             var source = (from st in db.Staffs.OrderBy(a => a.StaffName)
                           select st).AsQueryable();
+            string temp = RemoveUnicode(StaffSearchName);
+            //System.Diagnostics.Debug.WriteLine(temp);
             // Search Parameter
-            if (!string.IsNullOrEmpty(searchParam.StaffName))
+            if (!string.IsNullOrEmpty(StaffSearchName))
             {
-                source = source.Where(a => a.StaffName.Contains(searchParam.StaffName));
+                source = source.Where(a => a.NewStaffName.Contains(temp));
             }
             var items = source.ToList();
             return items;
@@ -73,14 +101,14 @@ namespace Company.Controllers
         // PUT: api/Staffs/5
         [HttpPut]
         [ActionName("EditStaffById")]
-        public IHttpActionResult PutStaff([FromUri]EditStaffByIdParameterModel editStaff, Staff staff)
+        public IHttpActionResult PutStaff([FromUri]long StaffId, Staff staff)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (editStaff.StaffId != staff.StaffID)
+            if (StaffId != staff.StaffID)
             {
                 return BadRequest();
             }
@@ -93,7 +121,7 @@ namespace Company.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!StaffExists(editStaff.StaffId))
+                if (!StaffExists(StaffId))
                 {
                     return NotFound();
                 }
@@ -109,9 +137,9 @@ namespace Company.Controllers
         // DELETE: api/Staffs/5
         [HttpDelete]
         [ActionName("DeleteStaffById")]
-        public IHttpActionResult DeleteStaff([FromUri]DeleteStaffByIdParameterModel deleteId)
+        public IHttpActionResult DeleteStaff([FromUri]long StaffId)
         {
-            Staff staff = db.Staffs.Find(deleteId.StaffId);
+            Staff staff = db.Staffs.Find(StaffId);
             if (staff == null)
             {
                 return NotFound();
